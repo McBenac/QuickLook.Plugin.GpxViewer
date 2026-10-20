@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Everything in the GPX file is treated as text; scripts only from this folder, images only from the map servers. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.fr https://server.arcgisonline.com; connect-src 'self' https://file.gpxviewer.example; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GpxViewer</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/leaflet/leaflet.js"></script>
+</head>
+<body>
+  <div id="map"></div>
+  <section id="info" hidden></section>
+  <section id="profile" hidden></section>
+  <div id="message" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

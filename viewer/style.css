@@ -1,0 +1,211 @@
+:root {
+  --bg: #181818;
+  --panel: rgba(24, 24, 24, 0.86);
+  --text: #e6e6e6;
+  --muted: #9a9a9a;
+  --accent: #2f9bff;
+  font: 13px/1.4 "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+}
+
+body.with-profile #map {
+  bottom: 110px;
+}
+
+body.no-map #map {
+  background: #20242a;
+}
+
+/* Panels */
+#info, #profile, #message {
+  position: absolute;
+  z-index: 1000;
+  background: var(--panel);
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+#info {
+  top: 10px;
+  left: 54px;
+  max-width: min(340px, calc(100% - 180px));
+  padding: 10px 14px;
+}
+
+#info h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+#info .file {
+  margin: 2px 0 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+#info dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin: 8px 0 0;
+}
+
+#info dt {
+  color: var(--muted);
+}
+
+#info dd {
+  margin: 0;
+}
+
+#info .empty {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+#profile {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 110px;
+  border-radius: 0;
+  box-sizing: border-box;
+  padding: 6px 10px 8px;
+}
+
+#profile .label {
+  color: var(--muted);
+  height: 18px;
+}
+
+#profile svg {
+  display: block;
+  width: 100%;
+  height: 78px;
+}
+
+#profile .area {
+  fill: rgba(47, 155, 255, 0.25);
+}
+
+#profile .line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+#message {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: min(560px, calc(100% - 48px));
+  padding: 20px 24px;
+  text-align: center;
+}
+
+#message h1 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  color: #ff7a6b;
+}
+
+#message .file {
+  margin: 0 0 8px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+#message .detail {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+body.failed #map {
+  display: none;
+}
+
+/* Leaflet controls in the dark theme */
+.leaflet-bar a, .layer-switch button {
+  background: #2a2a2a;
+  color: var(--text);
+  border-color: #444;
+}
+
+.leaflet-bar a:hover, .layer-switch button:hover {
+  background: #383838;
+  color: #fff;
+}
+
+.leaflet-bar a.leaflet-disabled {
+  background: #222;
+  color: #666;
+}
+
+.layer-switch {
+  display: flex;
+}
+
+.layer-switch button {
+  border: 0;
+  border-right: 1px solid #444;
+  padding: 5px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.layer-switch button:last-child {
+  border-right: 0;
+}
+
+.layer-switch button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(24, 24, 24, 0.7);
+  color: var(--muted);
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: #bbb;
+}
+
+.leaflet-control-scale-line {
+  background: rgba(24, 24, 24, 0.7);
+  color: var(--text);
+  border-color: #bbb;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip, .leaflet-tooltip {
+  background: #2a2a2a;
+  color: var(--text);
+  border-color: #444;
+}
+
+.point-popup .coord {
+  font-family: Consolas, monospace;
+}
+
+.gpx-pin {
+  background: none;
+  border: 0;
+}
