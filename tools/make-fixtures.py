@@ -129,7 +129,7 @@ def main():
     # GPX 1.0 (name and time directly under <gpx>), written with a byte order mark.
     t3 = START + timedelta(days=2)
     old = line(46.50, 7.90, 46.53, 7.97, 30, t3, 60)
-    files['gpx10.gpx'] = '﻿' + gpx_doc(NS10, '1.0',
+    files['gpx10.gpx'] = '\ufeff' + gpx_doc(NS10, '1.0',
         f'  <name>Old format</name>\n  <time>{iso(t3)}</time>\n', track_xml('Old track', [old]))
     exp['gpx10.gpx'] = expected(tracks=[('Old track', [old])])
 
@@ -140,12 +140,19 @@ def main():
     # Rejected by CanHandle.
     files['empty.gpx'] = ''
     files['broken.gpx'] = '<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="x"<trk>\n'
+    # A DOCTYPE with an external entity: accepted, and the entity is never resolved (no XXE).
+    files['doctype.gpx'] = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                            '<!DOCTYPE gpx [<!ENTITY ext SYSTEM "file:///nonexistent/fixture.txt">]>\n'
+                            f'<gpx version="1.1" creator="make-fixtures" xmlns="{NS11}"><name>&ext;</name></gpx>\n')
+    # The root element starts after the first 64 KB that CanHandle reads: rejected.
+    files['late-root.gpx'] = ('<?xml version="1.0" encoding="UTF-8"?>\n<!--' + ' ' * (64 * 1024) + '-->\n'
+                              f'<gpx version="1.1" creator="make-fixtures" xmlns="{NS11}"></gpx>\n')
     files['not-gpx.gpx'] = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                             '<kml xmlns="http://www.opengis.net/kml/2.2"><Document/></kml>\n')
 
     for name, text in files.items():
         (OUT / name).write_bytes(text.encode('utf-8'))
-    detect = {name: name not in ('empty.gpx', 'broken.gpx', 'not-gpx.gpx') for name in sorted(files)}
+    detect = {name: name not in ('empty.gpx', 'broken.gpx', 'not-gpx.gpx', 'late-root.gpx') for name in sorted(files)}
     (OUT / 'expected.json').write_text(
         json.dumps({'detect': detect, 'viewer': exp}, indent=2) + '\n', encoding='utf-8')
     print(f'{len(files)} fixtures written to {OUT.name}/')

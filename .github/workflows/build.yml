@@ -15,6 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Fixtures match tools/make-fixtures.py
+        shell: pwsh
+        run: |
+          python -B tools/make-fixtures.py
+          git status --porcelain tests/fixtures
+          git diff --exit-code --stat -- tests/fixtures
+          if ($LASTEXITCODE) { throw 'tests/fixtures differ from tools/make-fixtures.py' }
+
       - name: Fetch QuickLook.Common from the QuickLook release in quicklook-version.txt
         shell: pwsh
         run: ./scripts/get-quicklook-common.ps1

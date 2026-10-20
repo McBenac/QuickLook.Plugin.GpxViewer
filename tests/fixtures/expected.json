@@ -1,8 +1,10 @@
 {
   "detect": {
     "broken.gpx": false,
+    "doctype.gpx": true,
     "empty.gpx": false,
     "gpx10.gpx": true,
+    "late-root.gpx": false,
     "multi-segment.gpx": true,
     "not-gpx.gpx": false,
     "track-time-ele.gpx": true,
