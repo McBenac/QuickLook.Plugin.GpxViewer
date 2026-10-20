@@ -113,6 +113,26 @@ async function main() {
     }
   }
 
+  // Long recordings (1 Hz for hours) must load well within the plugin's 20 s timeout. Generated on the fly.
+  for (const n of [15000, 30000]) {
+    let body = '<?xml version="1.0"?><gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1"><trk><trkseg>';
+    for (let i = 0; i < n; i++) {
+      const a = (2 * Math.PI * i) / n;
+      const t = new Date(Date.UTC(2026, 0, 1, 0, 0, i)).toISOString();
+      body += `<trkpt lat="${(46.5 + 0.05 * Math.sin(a)).toFixed(6)}" lon="${(8 + 0.07 * Math.cos(a)).toFixed(6)}">`
+        + `<ele>${(1000 + 200 * Math.sin(3 * a)).toFixed(1)}</ele><time>${t}</time></trkpt>`;
+    }
+    body += '</trkseg></trk></gpx>';
+    await page.route((url) => url.pathname.endsWith(`/generated-${n}.gpx`), (route) => route.fulfill({ body, contentType: 'application/gpx+xml' }));
+    const started = Date.now();
+    await open(page, base, `generated-${n}.gpx`);
+    const seconds = (Date.now() - started) / 1000;
+    const points = await page.evaluate(() => window.gpxViewer?.summary.points);
+    console.log(`generated-${n}.gpx: ${points} points loaded in ${seconds.toFixed(1)} s`);
+    check(`generated-${n}.gpx`, 'points', points, n);
+    if (seconds > 10) failures.push(`generated-${n}.gpx: took ${seconds.toFixed(1)} s (limit 10 s)`);
+  }
+
   // The chosen layer is remembered for the next preview.
   await open(page, base, 'track-time-ele.gpx');
   await page.evaluate(() => window.gpxViewer.selectLayer('none'));

@@ -11,7 +11,8 @@ distance and duration.
 ## What it shows
 
 - Tracks (`trk`) as lines, each segment in its own colour, with the start (green) and end (red) marked
-  and a dot for every recorded point. Click a dot for its time, coordinates and elevation.
+  and a dot for every recorded point (for tracks of up to 20,000 points). Click a dot for its time,
+  coordinates and elevation.
 - Routes (`rte`) as dashed lines and waypoints (`wpt`) as pins.
 - A summary box: name, date and time of the first and last point, number of points, distance, duration
   and what the file contains.
