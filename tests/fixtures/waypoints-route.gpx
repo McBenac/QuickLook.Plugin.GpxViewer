@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="make-fixtures" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="46.57" lon="7.95"><name>Start</name></wpt>
+  <wpt lat="46.59" lon="7.99"><name>Viewpoint</name></wpt>
+  <wpt lat="46.56" lon="8.02"><name>Hut</name></wpt>
+  <rte>
+    <name>Planned route</name>
+    <rtept lat="46.57" lon="7.95"></rtept>
+    <rtept lat="46.58" lon="7.96"></rtept>
+    <rtept lat="46.59" lon="7.99"></rtept>
+    <rtept lat="46.58" lon="8.01"></rtept>
+    <rtept lat="46.56" lon="8.02"></rtept>
+    <rtept lat="46.555" lon="8.03"></rtept>
+  </rte>
+</gpx>

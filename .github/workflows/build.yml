@@ -1,0 +1,60 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Fetch QuickLook.Common from the QuickLook release in quicklook-version.txt
+        shell: pwsh
+        run: ./scripts/get-quicklook-common.ps1
+
+      - name: Build plugin
+        run: dotnet build src/QuickLook.Plugin.GpxViewer.csproj -c Release
+
+      - name: Build test harness
+        run: dotnet build tools/Harness/GpxViewer.Harness.csproj -c Release
+
+      - name: Detection test on fixtures
+        shell: pwsh
+        run: |
+          $expected = (Get-Content tests/fixtures/expected.json -Raw | ConvertFrom-Json).detect
+          $names = @($expected.PSObject.Properties.Name)
+          $out = bin/Harness/GpxViewer.Harness.exe detect @($names | ForEach-Object { "tests/fixtures/$_" })
+          $out
+          $failed = 0
+          for ($i = 0; $i -lt $names.Count; $i++) {
+            $want = if ($expected.($names[$i])) { 'GPX' } else { '-' }
+            $got = ($out[$i] -split "`t")[0]
+            if ($got -ne $want) { "FAIL $($names[$i]): expected $want, got $got"; $failed++ }
+          }
+          if ($failed) { throw "$failed detection result(s) wrong" }
+          "All $($names.Count) fixtures detected as expected"
+
+      - name: Check that QuickLook.Common is not shipped
+        shell: pwsh
+        run: if (Test-Path bin/Release/QuickLook.Common.dll) { throw 'QuickLook.Common.dll must not be packaged' }
+
+      - name: Pack .qlplugin
+        shell: pwsh
+        run: ./scripts/pack.ps1
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: QuickLook.Plugin.GpxViewer
+          path: QuickLook.Plugin.GpxViewer.qlplugin
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: harness
+          path: bin/Harness/

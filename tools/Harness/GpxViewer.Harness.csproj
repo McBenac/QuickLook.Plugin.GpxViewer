@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Test harness: runs the plugin's detection and renders a file to PNG outside QuickLook. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net462</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>GpxViewer.Harness</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\..\bin\Harness\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\QuickLook.Plugin.GpxViewer.csproj" />
+    <ProjectReference Include="..\..\QuickLook.Common\QuickLook.Common.csproj" />
+  </ItemGroup>
+
+</Project>
