@@ -94,13 +94,17 @@ internal sealed class GpxPanel : UserControl, IDisposable
             core.NewWindowRequested += OnNewWindowRequested;
             core.NavigationStarting += (_, args) =>
             {
-                // The page never navigates; block anything else (e.g. a file dropped on the view).
-                if (!Uri.TryCreate(args.Uri, UriKind.Absolute, out var uri) || uri.Host != AppHost)
-                    args.Cancel = true;
+                // The page never navigates away: https links (map attribution) open in the default browser,
+                // anything else (e.g. a file dropped on the view) is blocked.
+                if (Uri.TryCreate(args.Uri, UriKind.Absolute, out var uri) && uri.Host == AppHost)
+                    return;
+                args.Cancel = true;
+                OpenInBrowser(args.Uri);
             };
             core.WebMessageReceived += OnWebMessage;
 
-            // Allow = served as if with "Access-Control-Allow-Origin: *", so the page can fetch the file.
+            // Allow = served as if with "Access-Control-Allow-Origin: *", so the page (another origin) can fetch
+            // the file. The page treats everything in the file as text and has a Content-Security-Policy.
             core.SetVirtualHostNameToFolderMapping(AppHost, ViewerFolder, CoreWebView2HostResourceAccessKind.Allow);
             core.SetVirtualHostNameToFolderMapping(FileHost, Path.GetDirectoryName(_path),
                 CoreWebView2HostResourceAccessKind.Allow);
@@ -121,11 +125,16 @@ internal sealed class GpxPanel : UserControl, IDisposable
         return $"https://{AppHost}/index.html?src={Uri.EscapeDataString(source)}&name={Uri.EscapeDataString(name)}";
     }
 
-    /// <summary>Links in the map attribution open in the default browser, never inside the preview.</summary>
     private static void OnNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs args)
     {
         args.Handled = true;
-        if (Uri.TryCreate(args.Uri, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
+        OpenInBrowser(args.Uri);
+    }
+
+    /// <summary>Links in the map attribution open in the default browser, never inside the preview.</summary>
+    private static void OpenInBrowser(string link)
+    {
+        if (Uri.TryCreate(link, UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps)
         {
             try
             {
