@@ -10,6 +10,8 @@ const fileName = params.get('name') || (src ? decodeURIComponent(src.split('/').
 
 const COLORS = ['#ff5a36', '#2f9bff', '#f5c400', '#c23cff', '#18c964', '#ff3d9a', '#00c2c7', '#ff9f1a'];
 const ROUTE_COLOR = '#ffffff';
+// Above this many track points only the lines are drawn: a clickable dot per point would use too much memory.
+const MAX_DOTS = 20000;
 const LAYER_KEY = 'gpxviewer.layer';
 const LAYERS = {
   map: {
@@ -153,8 +155,12 @@ function renderProfile(gpx) {
   const width = 600;
   const height = 100;
   const total = samples[samples.length - 1][0] || 1;
-  const min = Math.min(...samples.map((s) => s[1]));
-  const max = Math.max(...samples.map((s) => s[1]));
+  let min = Infinity;
+  let max = -Infinity;
+  for (const [, e] of samples) {
+    min = Math.min(min, e);
+    max = Math.max(max, e);
+  }
   const span = max - min || 1;
   const xy = samples.map(([d, e]) => `${((d / total) * width).toFixed(1)},${(height - ((e - min) / span) * (height - 8) - 4).toFixed(1)}`);
 
@@ -282,6 +288,7 @@ function drawGpx(map, gpx) {
   const bounds = L.latLngBounds([]);
   const dots = L.canvas({ padding: 0.5 });
   let colorIndex = 0;
+  const withDots = gpx.tracks.reduce((n, t) => n + t.segments.reduce((m, seg) => m + seg.length, 0), 0) <= MAX_DOTS;
 
   gpx.tracks.forEach((track) => {
     const segments = track.segments;
@@ -292,6 +299,7 @@ function drawGpx(map, gpx) {
       const line = L.polyline(latlngs, { color, weight: 4, opacity: 0.9, className: 'gpx-track' }).addTo(map);
       if (title) line.bindTooltip(el('span', null, title), { sticky: true });
       bounds.extend(line.getBounds());
+      if (!withDots) return;
       for (const p of seg) {
         L.circleMarker([p.lat, p.lon], {
           renderer: dots, radius: 3, color: '#1b1b1b', weight: 1, fillColor: color, fillOpacity: 1,
@@ -360,6 +368,7 @@ async function main() {
   const map = L.map('map', { keyboard: false, worldCopyJump: false });
   map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank">Leaflet</a>');
   L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+  map.setView([20, 0], 2); // a view first: layers added to a map without one are queued, which is very slow
   const bounds = drawGpx(map, gpx);
   if (bounds.isValid()) {
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
