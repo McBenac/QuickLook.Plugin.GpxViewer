@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- QuickLook.Common's pre-build step stamps a version from its parent solution, which does not exist here. -->
+    <PreBuildEvent></PreBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,65 @@
+{
+  "detect": {
+    "broken.gpx": false,
+    "empty.gpx": false,
+    "gpx10.gpx": true,
+    "multi-segment.gpx": true,
+    "not-gpx.gpx": false,
+    "track-time-ele.gpx": true,
+    "truncated.gpx": true,
+    "waypoints-route.gpx": true
+  },
+  "viewer": {
+    "track-time-ele.gpx": {
+      "tracks": 1,
+      "segments": 1,
+      "routes": 0,
+      "waypoints": 0,
+      "points": 121,
+      "distanceMeters": 15783.9,
+      "start": "2026-01-01T09:00:00Z",
+      "end": "2026-01-01T10:00:00Z",
+      "durationSeconds": 3600,
+      "elevation": true
+    },
+    "multi-segment.gpx": {
+      "tracks": 2,
+      "segments": 3,
+      "routes": 0,
+      "waypoints": 0,
+      "points": 130,
+      "distanceMeters": 15435.1,
+      "start": "2026-01-02T09:00:00Z",
+      "end": "2026-01-02T13:20:25Z",
+      "durationSeconds": 15625,
+      "elevation": false
+    },
+    "waypoints-route.gpx": {
+      "tracks": 0,
+      "segments": 0,
+      "routes": 1,
+      "waypoints": 3,
+      "points": 0,
+      "distanceMeters": 9084.5,
+      "start": null,
+      "end": null,
+      "durationSeconds": null,
+      "elevation": false
+    },
+    "gpx10.gpx": {
+      "tracks": 1,
+      "segments": 1,
+      "routes": 0,
+      "waypoints": 0,
+      "points": 30,
+      "distanceMeters": 6310.3,
+      "start": "2026-01-03T09:00:00Z",
+      "end": "2026-01-03T09:29:00Z",
+      "durationSeconds": 1740,
+      "elevation": false
+    },
+    "truncated.gpx": {
+      "error": true
+    }
+  }
+}

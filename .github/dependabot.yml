@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
+# NuGet is left out on purpose: Microsoft.Web.WebView2 must match the version QuickLook itself ships,
+# since both load into the same process. The upstream-check workflow follows QuickLook's releases instead.

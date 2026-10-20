@@ -1,0 +1,59 @@
+name: upstream-check
+
+# Once a month: compares what the plugin is built against with the latest QuickLook release and the latest
+# Leaflet, and keeps one open issue listing what can be updated.
+
+on:
+  schedule:
+    - cron: '17 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Compare with upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          notes=()
+
+          # QuickLook: QuickLook.Common and the WebView2 SDK must match what the latest release ships,
+          # because the plugin runs inside QuickLook next to its own HTML viewer.
+          ql=$(tr -d '[:space:]' < quicklook-version.txt)
+          ql_latest=$(gh api repos/QL-Win/QuickLook/releases/latest --jq .tag_name)
+          [ "$ql" = "$ql_latest" ] || notes+=("QuickLook: built against $ql, latest release is $ql_latest. Update \`quicklook-version.txt\`.")
+          wv=$(grep -oP 'Microsoft\.Web\.WebView2" Version="\K[^"]+' src/QuickLook.Plugin.GpxViewer.csproj) \
+            || { echo 'Could not read the WebView2 version of this plugin'; exit 1; }
+          wv_ql=$(gh api "repos/QL-Win/QuickLook/contents/QuickLook.Plugin/QuickLook.Plugin.HtmlViewer/QuickLook.Plugin.HtmlViewer.csproj?ref=$ql_latest" --jq .content \
+            | base64 -d | grep -oP 'Microsoft\.Web\.WebView2" Version="\K[^"]+') \
+            || { echo "Could not read the WebView2 version of QuickLook $ql_latest"; exit 1; }
+          [ "$wv" = "$wv_ql" ] || notes+=("WebView2 SDK: $wv here, QuickLook $ql_latest ships $wv_ql. Update \`src/QuickLook.Plugin.GpxViewer.csproj\`.")
+
+          # Leaflet is bundled in viewer/vendor/ (versions.json). Only stable releases count.
+          leaflet=$(jq -r .leaflet viewer/vendor/versions.json)
+          grep -q "version=\"$leaflet\"" viewer/vendor/leaflet/leaflet.js \
+            || notes+=("viewer/vendor/versions.json says Leaflet $leaflet, but the bundled file is a different version.")
+          leaflet_latest=$(curl -fsS https://registry.npmjs.org/leaflet/latest | jq -r .version)
+          [ "$leaflet" = "$leaflet_latest" ] || notes+=("Leaflet: bundled $leaflet, latest $leaflet_latest.")
+
+          title='Upstream updates available'
+          open=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ ${#notes[@]} -eq 0 ]; then
+            echo "Everything is up to date."
+            [ -z "$open" ] || gh issue close "$open" --comment 'Everything is up to date now.'
+            exit 0
+          fi
+          body=$(printf -- '- %s\n' "${notes[@]}")
+          body+=$'\n\n'"Checked $(date -u +%Y-%m-%d) by the upstream-check workflow. After updating: build, run the tests and check a few GPX files in QuickLook before releasing."
+          printf '%s\n' "$body"
+          if [ -n "$open" ]; then gh issue edit "$open" --body "$body"; else gh issue create --title "$title" --body "$body"; fi

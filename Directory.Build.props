@@ -1,0 +1,6 @@
+<Project>
+  <ItemGroup>
+    <!-- Build net462 without a locally installed targeting pack (CI runners, any machine). -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>
