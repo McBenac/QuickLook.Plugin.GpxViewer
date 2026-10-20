@@ -1,0 +1,18 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.qlplugin
+*.zip
+node_modules/
+test-results/
+# Local test media (real photos/videos never go into the repo)
+samples/
+Build/
+__pycache__/
+*.pyc
+# Fetched by scripts/get-quicklook-common.ps1
+QuickLook.Common/
+.quicklook-src/
+GitVersion.cs
