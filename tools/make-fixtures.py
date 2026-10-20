@@ -153,8 +153,9 @@ def main():
     for name, text in files.items():
         (OUT / name).write_bytes(text.encode('utf-8'))
     detect = {name: name not in ('empty.gpx', 'broken.gpx', 'not-gpx.gpx', 'late-root.gpx') for name in sorted(files)}
-    (OUT / 'expected.json').write_text(
-        json.dumps({'detect': detect, 'viewer': exp}, indent=2) + '\n', encoding='utf-8')
+    # Bytes, not text mode: the same LF line endings on Windows (CI checks the files are unchanged).
+    (OUT / 'expected.json').write_bytes(
+        (json.dumps({'detect': detect, 'viewer': exp}, indent=2) + '\n').encode('utf-8'))
     print(f'{len(files)} fixtures written to {OUT.name}/')
 
 
