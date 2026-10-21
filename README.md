@@ -26,8 +26,8 @@ GPX 1.0 and 1.1 are supported. A file that is not valid XML shows an error page 
 ## Large files
 
 - **More than 20,000 track points** in a file: the tracks are drawn as lines with the start and end marked,
-  but without a clickable dot for every point. Drawing that many dots makes the preview slow, and around
-  200,000 they crash it.
+  but without a clickable dot for every point. Far more dots than that slow the preview down, and around
+  200,000 crash it.
 - **Tested up to 30,000 points**, which load in about 3.5 seconds. Larger files have not been tested and
   may take longer than the preview's 20-second limit. The preview then shows *Timed out while loading the
   preview.* Open such files in a map app instead.
