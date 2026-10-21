@@ -11,8 +11,8 @@ distance and duration.
 ## What it shows
 
 - Tracks (`trk`) as lines, each segment in its own colour, with the start (green) and end (red) marked
-  and a dot for every recorded point (for tracks of up to 20,000 points). Click a dot for its time,
-  coordinates and elevation.
+  and a dot for every recorded point (up to 20,000 points, see [Large files](#large-files)). Click a dot
+  for its time, coordinates and elevation.
 - Routes (`rte`) as dashed lines and waypoints (`wpt`) as pins.
 - A summary box: name, date and time of the first and last point, number of points, distance, duration
   and what the file contains.
@@ -22,6 +22,15 @@ distance and duration.
   remembered.
 
 GPX 1.0 and 1.1 are supported. A file that is not valid XML shows an error page with the parser's message.
+
+## Large files
+
+- **More than 20,000 track points** in a file: the tracks are drawn as lines with the start and end marked,
+  but without a clickable dot for every point. Drawing that many dots makes the preview slow, and around
+  200,000 they crash it.
+- **Tested up to 30,000 points**, which load in about 3.5 seconds. Larger files have not been tested and
+  may take longer than the preview's 20-second limit. The preview then shows *Timed out while loading the
+  preview.* Open such files in a map app instead.
 
 ## Privacy
 
